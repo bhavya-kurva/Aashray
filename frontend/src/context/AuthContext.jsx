@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext(null);
@@ -10,11 +10,20 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => localStorage.getItem('authToken'));
   const [loading, setLoading] = useState(true);
 
-  if (token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  } else {
+  const logout = useCallback(() => {
+    localStorage.removeItem('authToken');
+    setToken(null);
+    setUser(null);
     delete axios.defaults.headers.common['Authorization'];
-  }
+  }, []);
+
+  useEffect(() => {
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    } else {
+      delete axios.defaults.headers.common['Authorization'];
+    }
+  }, [token]);
 
   useEffect(() => {
     const fetchMe = async () => {
@@ -36,10 +45,11 @@ export const AuthProvider = ({ children }) => {
       }
     };
     fetchMe();
-  }, [token]);
+  }, [token, logout]);
 
   const login = async (phone, password) => {
-    const response = await axios.post(`${BASE_URL}/auth/login`, { phone, password });
+    const cleanPhone = phone ? String(phone).trim() : '';
+    const response = await axios.post(`${BASE_URL}/auth/login`, { phone: cleanPhone, password });
     const { access_token, user: userData } = response.data;
     localStorage.setItem('authToken', access_token);
     axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
@@ -49,17 +59,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (name, phone, password, role, email = "") => {
-    const payload = { name, phone, password, role };
-    if (email) payload.email = email;
+    const cleanPhone = phone ? String(phone).trim() : '';
+    const payload = { name: name.trim(), phone: cleanPhone, password, role };
+    if (email && email.trim()) payload.email = email.trim();
     const response = await axios.post(`${BASE_URL}/auth/register`, payload);
     return response.data;
-  };
-
-  const logout = () => {
-    localStorage.removeItem('authToken');
-    setToken(null);
-    setUser(null);
-    delete axios.defaults.headers.common['Authorization'];
   };
 
   return (

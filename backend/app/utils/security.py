@@ -4,10 +4,9 @@ from typing import Optional
 import jwt
 from app.config import settings
 
-# Attempt to load passlib for bcrypt. Fallback to hashlib if dependencies fail.
+# Use native bcrypt if available, fallback to SHA-256
 try:
-    from passlib.context import CryptContext
-    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    import bcrypt
     HAS_BCRYPT = True
 except Exception:
     HAS_BCRYPT = False
@@ -15,7 +14,8 @@ except Exception:
 def hash_password(password: str) -> str:
     if HAS_BCRYPT:
         try:
-            return pwd_context.hash(password)
+            salt = bcrypt.gensalt()
+            return bcrypt.hashpw(password.encode("utf-8"), salt).decode("utf-8")
         except Exception:
             pass
     # Fallback salt-based SHA256
@@ -23,16 +23,16 @@ def hash_password(password: str) -> str:
     return hashlib.sha256((password + salt).encode("utf-8")).hexdigest()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    if HAS_BCRYPT and hashed_password.startswith("$2"):
+    if not hashed_password or not plain_password:
+        return False
+    if HAS_BCRYPT and (hashed_password.startswith("$2a$") or hashed_password.startswith("$2b$") or hashed_password.startswith("$2y$")):
         try:
-            return pwd_context.verify(plain_password, hashed_password)
+            return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
         except Exception:
             pass
     salt = settings.JWT_SECRET
     expected_256 = hashlib.sha256((plain_password + salt).encode("utf-8")).hexdigest()
     return expected_256 == hashed_password
-
-
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()

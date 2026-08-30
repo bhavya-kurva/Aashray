@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <defs>
+    <linearGradient id="fire-sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1f0705" />
+      <stop offset="50%" stop-color="#450a0a" />
+      <stop offset="100%" stop-color="#7f1d1d" />
+    </linearGradient>
+    <linearGradient id="fire-gradient-1" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#7f1d1d" />
+      <stop offset="40%" stop-color="#dc2626" />
+      <stop offset="70%" stop-color="#ea580c" />
+      <stop offset="90%" stop-color="#f97316" />
+      <stop offset="100%" stop-color="#fef08a" />
+    </linearGradient>
+    <linearGradient id="fire-gradient-2" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#991b1b" />
+      <stop offset="50%" stop-color="#f97316" />
+      <stop offset="85%" stop-color="#facc15" />
+      <stop offset="100%" stop-color="#fffbeb" />
+    </linearGradient>
+    <radialGradient id="thermal-glow" cx="50%" cy="80%" r="60%">
+      <stop offset="0%" stop-color="#f97316" stop-opacity="0.8" />
+      <stop offset="40%" stop-color="#dc2626" stop-opacity="0.4" />
+      <stop offset="80%" stop-color="#7f1d1d" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#180404" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Dark Smoky Night Sky Background -->
+  <rect width="1200" height="800" fill="url(#fire-sky)" />
+
+  <!-- Thermal Heat & Infrared Radiation Overlay Glow -->
+  <rect width="1200" height="800" fill="url(#thermal-glow)" />
+
+  <!-- Thermal Hazard Radar Grid Rings -->
+  <g fill="none" stroke="#f97316" stroke-opacity="0.14" stroke-width="1.5">
+    <ellipse cx="600" cy="620" rx="550" ry="260" stroke-dasharray="8 6" />
+    <ellipse cx="600" cy="620" rx="420" ry="200" />
+    <ellipse cx="600" cy="620" rx="280" ry="130" stroke-dasharray="6 4" />
+    <ellipse cx="600" cy="620" rx="140" ry="65" />
+  </g>
+
+  <!-- Distant Timber Forest Ridge Silhouettes -->
+  <g fill="#1f0705" opacity="0.85">
+    <!-- Trees on left ridge -->
+    <polygon points="40,560 60,460 80,560" />
+    <polygon points="75,560 95,430 115,560" />
+    <polygon points="110,560 130,470 150,560" />
+    <polygon points="145,560 170,440 195,560" />
+    <polygon points="190,560 210,480 230,560" />
+    <polygon points="220,560 245,420 270,560" />
+    <polygon points="265,560 290,450 315,560" />
+    <polygon points="310,560 330,490 350,560" />
+    <polygon points="340,560 365,430 390,560" />
+    <!-- Trees on right ridge -->
+    <polygon points="820,560 845,450 870,560" />
+    <polygon points="860,560 885,420 910,560" />
+    <polygon points="900,560 925,470 950,560" />
+    <polygon points="945,560 970,430 995,560" />
+    <polygon points="990,560 1010,480 1030,560" />
+    <polygon points="1025,560 1050,440 1075,560" />
+    <polygon points="1070,560 1095,460 1120,560" />
+    <polygon points="1110,560 1135,420 1160,560" />
+  </g>
+
+  <!-- Background Forest Fire Wall -->
+  <path d="M 0 680 Q 80 500 160 560 Q 240 460 320 540 Q 400 420 480 520 Q 560 380 640 500 Q 720 400 800 520 Q 880 440 960 540 Q 1040 460 1120 520 Q 1160 480 1200 550 L 1200 800 L 0 800 Z" fill="url(#fire-gradient-1)" opacity="0.8" />
+
+  <!-- Midground Intense Leaping Fire Front -->
+  <path d="M 0 720 C 60 620 100 520 140 600 C 180 500 240 440 280 560 C 330 460 380 380 440 520 C 500 360 560 320 620 480 C 680 340 760 360 820 500 C 880 420 940 460 990 580 C 1040 480 1100 540 1150 620 L 1200 720 L 1200 800 L 0 800 Z" fill="url(#fire-gradient-2)" />
+
+  <!-- Burning Canopy Silhouette in Foreground -->
+  <g fill="#140303">
+    <!-- Burnt Tree 1 -->
+    <path d="M 380 720 L 390 490 L 370 460 L 390 470 L 395 430 L 400 470 L 420 450 L 402 490 L 415 720 Z" />
+    <!-- Burnt Tree 2 -->
+    <path d="M 680 720 L 690 460 L 670 420 L 692 440 L 698 390 L 705 440 L 725 420 L 702 460 L 715 720 Z" />
+    <!-- Burnt Tree 3 -->
+    <path d="M 850 720 L 858 520 L 840 490 L 860 500 L 865 470 L 872 500 L 890 480 L 870 520 L 880 720 Z" />
+  </g>
+
+  <!-- Intense White-Hot Fire Cores & Licking Flame Tongues -->
+  <path d="M 180 740 C 220 660 250 560 280 640 C 320 580 360 520 400 620 C 440 540 480 460 520 600 C 560 480 610 420 660 580 C 720 460 780 500 830 640 C 880 560 930 620 980 740 Z" fill="#fffbeb" opacity="0.8" />
+  <path d="M 340 740 C 380 640 420 540 460 630 C 500 520 550 440 600 580 C 650 460 710 480 760 620 C 800 540 850 630 900 740 Z" fill="#fef08a" opacity="0.9" />
+
+  <!-- Rising Embers & Spark Particles -->
+  <g fill="#fef08a">
+    <circle cx="280" cy="380" r="3.5" />
+    <circle cx="340" cy="320" r="2.5" />
+    <circle cx="420" cy="280" r="4" />
+    <circle cx="490" cy="220" r="3" />
+    <circle cx="560" cy="180" r="4.5" />
+    <circle cx="620" cy="140" r="3.5" />
+    <circle cx="670" cy="190" r="2.5" />
+    <circle cx="730" cy="240" r="4" />
+    <circle cx="780" cy="170" r="3" />
+    <circle cx="840" cy="290" r="3.5" />
+    <circle cx="910" cy="340" r="2" />
+    <circle cx="460" cy="360" r="3" />
+    <circle cx="610" cy="260" r="4" />
+    <circle cx="700" cy="310" r="3" />
+  </g>
+
+  <!-- Wildfire Flame Icon Symbol Centerpiece Highlight -->
+  <g transform="translate(600, 260) scale(1.4)">
+    <path d="M 0 -40 C -10 -20 -30 0 -30 20 C -30 36 -16 50 0 50 C 16 50 30 36 30 20 C 30 0 10 -20 0 -40 Z" fill="#ea580c" opacity="0.75" />
+    <path d="M 0 -25 C -6 -10 -18 5 -18 20 C -18 30 -10 38 0 38 C 10 38 18 30 18 20 C 18 5 6 -10 0 -25 Z" fill="#facc15" opacity="0.9" />
+    <path d="M 0 -10 C -3 0 -9 10 -9 20 C -9 25 -5 30 0 30 C 5 30 9 25 9 20 C 9 10 3 0 0 -10 Z" fill="#ffffff" />
+  </g>
+</svg>

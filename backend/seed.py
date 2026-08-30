@@ -10,13 +10,17 @@ from app.database import SessionLocal, engine, Base
 from app.models import User, Incident, RescueTeam, Shelter, SupplyDepot, DisasterAlert
 from app.utils.security import hash_password
 
-def seed_db():
-    print("Recreating database tables...")
-    Base.metadata.drop_all(bind=engine)
+def seed_db(drop_existing=True):
+    if drop_existing:
+        print("Recreating database tables...")
+        Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     
     db = SessionLocal()
     try:
+        if not drop_existing and db.query(User).count() > 0:
+            print("Database already contains data, skipping auto-seed.")
+            return
         print("Seeding Users...")
         # Password hashes
         users = [

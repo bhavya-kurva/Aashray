@@ -50,14 +50,21 @@ def check_role(required_roles: list[str]):
         return current_user
     return dependency
 
+def normalize_phone(phone: str) -> str:
+    if not phone:
+        return ""
+    digits = "".join(c for c in phone if c.isdigit())
+    if len(digits) == 12 and digits.startswith("91"):
+        digits = digits[2:]
+    return digits if digits else phone.strip()
+
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 @router.post("/register-citizen", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register(user_in: UserCreate, db: Session = Depends(get_db)):
-    # Clean phone (remove spaces, etc)
-    phone_clean = user_in.phone.strip()
+    phone_clean = normalize_phone(user_in.phone)
     
     # Check duplicate
-    existing_user = db.query(User).filter(User.phone == phone_clean).first()
+    existing_user = db.query(User).filter((User.phone == phone_clean) | (User.phone == user_in.phone.strip())).first()
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -66,9 +73,9 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
         
     hashed = hash_password(user_in.password)
     user = User(
-        name=user_in.name,
+        name=user_in.name.strip(),
         phone=phone_clean,
-        email=user_in.email,
+        email=user_in.email.strip() if user_in.email else None,
         password_hash=hashed,
         role=user_in.role
     )
@@ -80,8 +87,8 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 def login(credentials: UserLogin, db: Session = Depends(get_db)):
-    phone_clean = credentials.phone.strip()
-    user = db.query(User).filter(User.phone == phone_clean).first()
+    phone_clean = normalize_phone(credentials.phone)
+    user = db.query(User).filter((User.phone == phone_clean) | (User.phone == credentials.phone.strip())).first()
     
     if not user or not verify_password(credentials.password, user.password_hash):
         raise HTTPException(

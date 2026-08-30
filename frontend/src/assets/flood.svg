@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <defs>
+    <linearGradient id="flood-sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#051329" />
+      <stop offset="60%" stop-color="#0b294f" />
+      <stop offset="100%" stop-color="#083866" />
+    </linearGradient>
+    <linearGradient id="flood-water-1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0369a1" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#082f49" stop-opacity="0.95" />
+    </linearGradient>
+    <linearGradient id="flood-water-2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#0c4a6e" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="flood-water-3" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#075985" stop-opacity="0.95" />
+    </linearGradient>
+    <linearGradient id="water-glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0" />
+      <stop offset="50%" stop-color="#7dd3fc" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background Sky & Atmospheric Storm Depth -->
+  <rect width="1200" height="800" fill="url(#flood-sky)" />
+
+  <!-- Rain Streams -->
+  <g stroke="#38bdf8" stroke-opacity="0.15" stroke-width="1.5" stroke-linecap="round">
+    <line x1="80" y1="20" x2="30" y2="180" />
+    <line x1="220" y1="10" x2="170" y2="190" />
+    <line x1="380" y1="40" x2="330" y2="210" />
+    <line x1="520" y1="15" x2="470" y2="175" />
+    <line x1="690" y1="35" x2="640" y2="220" />
+    <line x1="840" y1="10" x2="790" y2="185" />
+    <line x1="990" y1="50" x2="940" y2="230" />
+    <line x1="1120" y1="25" x2="1070" y2="195" />
+    <line x1="150" y1="120" x2="100" y2="290" />
+    <line x1="300" y1="140" x2="250" y2="310" />
+    <line x1="450" y1="110" x2="400" y2="280" />
+    <line x1="600" y1="130" x2="550" y2="300" />
+    <line x1="760" y1="125" x2="710" y2="295" />
+    <line x1="910" y1="145" x2="860" y2="320" />
+    <line x1="1060" y1="115" x2="1010" y2="285" />
+  </g>
+
+  <!-- Distant Submerged Cityscape / Buildings in Silhouette -->
+  <path d="M 120 480 L 120 370 L 160 370 L 160 410 L 200 410 L 200 350 L 240 350 L 240 480 Z" fill="#041f3d" opacity="0.7"/>
+  <path d="M 280 480 L 280 390 L 330 390 L 330 480 Z" fill="#041f3d" opacity="0.6"/>
+  <path d="M 400 480 L 400 330 L 430 330 L 430 300 L 460 330 L 480 330 L 480 480 Z" fill="#05284f" opacity="0.8"/>
+  <path d="M 520 480 L 520 380 L 570 380 L 570 480 Z" fill="#041f3d" opacity="0.5"/>
+  <path d="M 720 480 L 720 340 L 770 340 L 770 480 Z" fill="#05284f" opacity="0.8"/>
+  <path d="M 820 480 L 820 360 L 870 360 L 870 400 L 910 400 L 910 480 Z" fill="#041f3d" opacity="0.7"/>
+  <path d="M 980 480 L 980 320 L 1020 320 L 1020 480 Z" fill="#05284f" opacity="0.85"/>
+
+  <!-- Telemetry Water Level Grid Overlays -->
+  <g stroke="#38bdf8" stroke-opacity="0.12" stroke-width="1" stroke-dasharray="4 8">
+    <line x1="0" y1="280" x2="1200" y2="280" />
+    <line x1="0" y1="360" x2="1200" y2="360" />
+    <line x1="0" y1="440" x2="1200" y2="440" />
+    <line x1="0" y1="520" x2="1200" y2="520" />
+    <line x1="0" y1="600" x2="1200" y2="600" />
+  </g>
+
+  <!-- Deep Back Water Swell -->
+  <path d="M 0 460 Q 280 410 600 450 T 1200 430 L 1200 800 L 0 800 Z" fill="url(#flood-water-1)" />
+
+  <!-- Mid-Ground Violent Surge Waves -->
+  <path d="M 0 520 C 180 470 340 560 520 500 C 700 440 880 540 1060 480 Q 1140 455 1200 470 L 1200 800 L 0 800 Z" fill="url(#flood-water-3)" />
+
+  <!-- Wave Crest Foam Line -->
+  <path d="M 0 520 C 180 470 340 560 520 500 C 700 440 880 540 1060 480 Q 1140 455 1200 470" fill="none" stroke="url(#water-glow)" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Foreground Rising Flood Waters -->
+  <path d="M 0 600 C 220 550 420 630 680 570 C 920 510 1080 620 1200 580 L 1200 800 L 0 800 Z" fill="url(#flood-water-2)" />
+  <path d="M 0 600 C 220 550 420 630 680 570 C 920 510 1080 620 1200 580" fill="none" stroke="#e0f2fe" stroke-width="2.5" stroke-opacity="0.8" />
+
+  <!-- Flood Telemetry Radar Beacon & Sensor Rings -->
+  <g transform="translate(600, 240)">
+    <circle cx="0" cy="0" r="160" fill="none" stroke="#38bdf8" stroke-opacity="0.08" stroke-width="1.5" />
+    <circle cx="0" cy="0" r="110" fill="none" stroke="#38bdf8" stroke-opacity="0.15" stroke-width="2" stroke-dasharray="8 6" />
+    <circle cx="0" cy="0" r="60" fill="none" stroke="#38bdf8" stroke-opacity="0.25" stroke-width="2" />
+    <circle cx="0" cy="0" r="12" fill="#38bdf8" fill-opacity="0.6" />
+    
+    <!-- Flood Warning Waves Icon Center -->
+    <path d="M -40 -15 C -25 -30 -10 -30 0 -15 C 10 0 25 0 40 -15 M -40 10 C -25 -5 -10 -5 0 10 C 10 25 25 25 40 10 M -40 35 C -25 20 -10 20 0 35 C 10 50 25 50 40 35" fill="none" stroke="#bae6fd" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+</svg>

@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <defs>
+    <linearGradient id="cyclone-sky" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b0a1f" />
+      <stop offset="50%" stop-color="#18153d" />
+      <stop offset="100%" stop-color="#2a124d" />
+    </linearGradient>
+    <linearGradient id="spiral-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8" stop-opacity="0.9" />
+      <stop offset="50%" stop-color="#c084fc" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#4338ca" stop-opacity="0.1" />
+    </linearGradient>
+    <linearGradient id="spiral-grad-2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#6366f1" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#312e81" stop-opacity="0.1" />
+    </linearGradient>
+    <radialGradient id="eye-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e0e7ff" stop-opacity="0.9" />
+      <stop offset="30%" stop-color="#818cf8" stop-opacity="0.4" />
+      <stop offset="70%" stop-color="#4f46e5" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#1e1b4b" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background Sky -->
+  <rect width="1200" height="800" fill="url(#cyclone-sky)" />
+
+  <!-- Meteorological Isobar & Pressure Rings -->
+  <g fill="none" stroke="#818cf8" stroke-opacity="0.12" stroke-width="1.5">
+    <ellipse cx="600" cy="400" rx="550" ry="340" transform="rotate(-15 600 400)" />
+    <ellipse cx="600" cy="400" rx="440" ry="270" transform="rotate(-15 600 400)" stroke-dasharray="8 6" />
+    <ellipse cx="600" cy="400" rx="340" ry="210" transform="rotate(-15 600 400)" />
+    <ellipse cx="600" cy="400" rx="240" ry="150" transform="rotate(-15 600 400)" stroke-dasharray="6 4" />
+    <ellipse cx="600" cy="400" rx="140" ry="90" transform="rotate(-15 600 400)" />
+  </g>
+
+  <!-- Cyclone Outer Spiral Arms -->
+  <path d="M 600 400 C 750 250 1000 280 1150 420 C 1100 580 920 680 720 720 C 500 760 300 700 150 560 C 50 440 60 260 180 140 C 320 20 560 0 780 40 C 980 80 1120 200 1180 340" fill="none" stroke="url(#spiral-grad-1)" stroke-width="38" stroke-linecap="round" opacity="0.35" />
+  
+  <path d="M 600 400 C 480 520 280 490 160 380 C 190 240 340 140 520 110 C 720 70 920 130 1050 260 C 1140 360 1130 520 1020 630 C 890 740 680 780 480 740 C 300 700 160 590 100 460" fill="none" stroke="url(#spiral-grad-2)" stroke-width="26" stroke-linecap="round" opacity="0.45" />
+
+  <!-- Intermediate Dense Spiral Streamlines -->
+  <path d="M 600 400 C 700 320 860 330 940 430 C 900 520 780 580 660 590 C 520 600 400 540 330 440 C 280 340 320 230 420 170 C 530 110 680 120 780 190 C 870 260 880 370 820 460" fill="none" stroke="#c084fc" stroke-width="8" stroke-linecap="round" opacity="0.6" />
+
+  <path d="M 600 400 C 520 460 400 440 350 360 C 370 280 460 230 550 230 C 650 230 730 290 750 380 C 760 460 700 530 610 550 C 510 570 420 510 380 420" fill="none" stroke="#e0e7ff" stroke-width="4" stroke-linecap="round" opacity="0.75" />
+
+  <path d="M 600 400 C 650 350 730 360 760 410 C 750 460 690 490 640 490 C 570 490 520 450 510 390 C 500 330 550 280 610 270" fill="none" stroke="#a5b4fc" stroke-width="3" stroke-linecap="round" opacity="0.9" />
+
+  <!-- Cyclone Eye Central Core Glow & Vortex Calm Center -->
+  <circle cx="600" cy="400" r="180" fill="url(#eye-glow)" />
+  <circle cx="600" cy="400" r="28" fill="#0b0a1f" stroke="#818cf8" stroke-width="3" />
+  <circle cx="600" cy="400" r="8" fill="#c084fc" />
+
+  <!-- Wind Gale Velocity Arrows / Vectors -->
+  <g fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.7">
+    <!-- Top-Right gale -->
+    <path d="M 780 240 Q 860 270 910 320" />
+    <polygon points="910,320 898,312 905,324" fill="#a78bfa" />
+    
+    <!-- Bottom-Right gale -->
+    <path d="M 850 540 Q 770 610 680 640" />
+    <polygon points="680,640 693,643 685,632" fill="#a78bfa" />
+
+    <!-- Bottom-Left gale -->
+    <path d="M 420 560 Q 340 510 300 430" />
+    <polygon points="300,430 305,444 313,433" fill="#a78bfa" />
+
+    <!-- Top-Left gale -->
+    <path d="M 360 260 Q 440 190 530 170" />
+    <polygon points="530,170 517,167 525,178" fill="#a78bfa" />
+  </g>
+</svg>

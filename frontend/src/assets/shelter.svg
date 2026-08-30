@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <defs>
+    <linearGradient id="shelter-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#052e16" />
+      <stop offset="50%" stop-color="#14532d" />
+      <stop offset="100%" stop-color="#166534" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#shelter-bg)" />
+  <g fill="none" stroke="#4ade80" stroke-opacity="0.12" stroke-width="1.5">
+    <ellipse cx="600" cy="450" rx="350" ry="200" />
+    <ellipse cx="600" cy="450" rx="220" ry="120" stroke-dasharray="8 6" />
+  </g>
+  <!-- Relief Safe Haven & Shelter Tents -->
+  <g transform="translate(600, 360)">
+    <polygon points="0,-90 -110,60 110,60" fill="#15803d" stroke="#86efac" stroke-width="6" />
+    <polygon points="0,-90 -35,60 35,60" fill="#052e16" />
+    <rect x="-8" y="-30" width="16" height="40" fill="#ffffff" rx="2" />
+    <rect x="-20" y="-18" width="40" height="16" fill="#ffffff" rx="2" />
+  </g>
+</svg>

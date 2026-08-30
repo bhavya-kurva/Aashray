@@ -3,7 +3,8 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.database import engine, Base, is_sqlite
+from app.database import engine, Base, SessionLocal, is_sqlite
+from app.models import User
 from app.config import settings
 from app.websocket.manager import manager
 
@@ -12,6 +13,19 @@ from app.routers import auth, incidents, resources, allocation, alerts, webhooks
 
 # Create DB Tables on Startup (perfect for prototyping/local dev)
 Base.metadata.create_all(bind=engine)
+
+def auto_seed_if_empty():
+    db = SessionLocal()
+    try:
+        if db.query(User).count() == 0:
+            from seed import seed_db
+            seed_db(drop_existing=False)
+    except Exception as e:
+        print(f"Database auto-seed check: {e}")
+    finally:
+        db.close()
+
+auto_seed_if_empty()
 
 app = FastAPI(
     title="Real-Time Disaster Management & Resource Coordination API",

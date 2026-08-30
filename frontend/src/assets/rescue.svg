@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <defs>
+    <linearGradient id="rescue-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#022c22" />
+      <stop offset="50%" stop-color="#064e3b" />
+      <stop offset="100%" stop-color="#065f46" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#rescue-bg)" />
+  <g fill="none" stroke="#34d399" stroke-opacity="0.12" stroke-width="1.5">
+    <circle cx="600" cy="400" r="300" />
+    <circle cx="600" cy="400" r="200" stroke-dasharray="8 6" />
+    <circle cx="600" cy="400" r="100" />
+  </g>
+  <!-- Humanitarian Rescue Lifebuoy / Medical Shield -->
+  <g transform="translate(600, 380)">
+    <circle cx="0" cy="0" r="90" fill="#047857" stroke="#6ee7b7" stroke-width="8" />
+    <circle cx="0" cy="0" r="45" fill="#064e3b" stroke="#6ee7b7" stroke-width="6" />
+    <rect x="-12" y="-35" width="24" height="70" fill="#ecfdf5" rx="4" />
+    <rect x="-35" y="-12" width="70" height="24" fill="#ecfdf5" rx="4" />
+  </g>
+</svg>

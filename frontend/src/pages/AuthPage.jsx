@@ -46,15 +46,27 @@ const AuthPage = () => {
     }
 
     try {
+      const cleanPhone = phone ? phone.trim() : '';
       if (isRegister) {
-        await register(name, phone, password, role, email);
-        await login(phone, password);
+        await register(name.trim(), cleanPhone, password, role, email ? email.trim() : '');
+        await login(cleanPhone, password);
       } else {
-        await login(phone, password);
+        await login(cleanPhone, password);
       }
     } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.detail || 'Authentication failed. Please verify credentials.');
+      console.error('Authentication error:', err);
+      let errorMsg = 'Authentication failed. Please verify credentials.';
+      const detail = err.response?.data?.detail;
+      if (typeof detail === 'string') {
+        errorMsg = detail;
+      } else if (Array.isArray(detail)) {
+        errorMsg = detail.map((d) => d.msg || `${d.loc?.slice(-1)[0]}: ${d.msg}`).join(', ');
+      } else if (err.response?.data?.message) {
+        errorMsg = err.response.data.message;
+      } else if (err.message) {
+        errorMsg = err.message;
+      }
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
