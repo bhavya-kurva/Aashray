@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8000/api';
+const BASE_URL = 'https://aashray-backend-ir1k.onrender.com/api';
 
 const api = axios.create({
   baseURL: BASE_URL,
