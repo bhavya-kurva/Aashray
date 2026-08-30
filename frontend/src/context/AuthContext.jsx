@@ -3,12 +3,13 @@ import axios from 'axios';
 
 const AuthContext = createContext(null);
 
+const BASE_URL = 'http://localhost:8000/api';
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem('authToken'));
   const [loading, setLoading] = useState(true);
 
-  // Set default authorization header if token exists
   if (token) {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   } else {
@@ -17,14 +18,15 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchMe = async () => {
-      if (!token) {
+      const storedToken = localStorage.getItem('authToken');
+      if (!storedToken) {
         setUser(null);
         setLoading(false);
         return;
       }
       try {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        const response = await axios.get('http://localhost:8000/api/auth/me');
+        axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+        const response = await axios.get(`${BASE_URL}/auth/me`);
         setUser(response.data);
       } catch (error) {
         console.error("Failed to fetch user context", error);
@@ -37,9 +39,10 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   const login = async (phone, password) => {
-    const response = await axios.post('http://localhost:8000/api/auth/login', { phone, password });
+    const response = await axios.post(`${BASE_URL}/auth/login`, { phone, password });
     const { access_token, user: userData } = response.data;
     localStorage.setItem('authToken', access_token);
+    axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
     setToken(access_token);
     setUser(userData);
     return userData;
@@ -48,7 +51,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, phone, password, role, email = "") => {
     const payload = { name, phone, password, role };
     if (email) payload.email = email;
-    const response = await axios.post('http://localhost:8000/api/auth/register', payload);
+    const response = await axios.post(`${BASE_URL}/auth/register`, payload);
     return response.data;
   };
 

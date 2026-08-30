@@ -1,12 +1,6 @@
-import React, { useEffect } from 'react';
-import { 
-  MapContainer, TileLayer, Marker, Popup, Polyline, Circle, useMap 
-} from 'react-leaflet';
+import React, { useEffect, useState } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { useLanguage } from '../context/LanguageContext';
-import { Shield, Home, Package, Info, AlertTriangle } from 'lucide-react';
-
-// Fix Vite asset loader issues for default icons
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -22,7 +16,7 @@ L.Icon.Default.mergeOptions({
 const MapRecenter = ({ center, zoom }) => {
   const map = useMap();
   useEffect(() => {
-    if (center) {
+    if (center && Array.isArray(center) && center.length === 2 && !isNaN(center[0]) && !isNaN(center[1])) {
       map.setView(center, zoom || 13, { animate: true, duration: 0.8 });
     }
   }, [center, map, zoom]);
@@ -30,7 +24,7 @@ const MapRecenter = ({ center, zoom }) => {
 };
 
 // SVG Icon Creator for visual richness
-const createCustomIcon = (color, type, badgeCount = 0) => {
+const createCustomIcon = (color, type) => {
   let svgContent = '';
   if (type === 'incident') {
     svgContent = `
@@ -42,7 +36,7 @@ const createCustomIcon = (color, type, badgeCount = 0) => {
     `;
   } else if (type === 'team') {
     svgContent = `
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="background:#ffffff; border-radius:50%; padding:5px; border:2px solid ${color}; box-shadow: 0 2px 5px rgb(0 0 0 / 0.15)">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="background:#0f172a; border-radius:50%; padding:5px; border:2px solid ${color}; box-shadow: 0 2px 8px rgb(0 0 0 / 0.5)">
         <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>
         <path d="M19 18h2a1 1 0 0 0 1-1v-3.5L18.5 10H14"/>
         <circle cx="7" cy="18" r="2"/>
@@ -51,14 +45,14 @@ const createCustomIcon = (color, type, badgeCount = 0) => {
     `;
   } else if (type === 'shelter') {
     svgContent = `
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="background:#ffffff; border-radius:50%; padding:5px; border:2px solid ${color}; box-shadow: 0 2px 5px rgb(0 0 0 / 0.15)">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="background:#0f172a; border-radius:50%; padding:5px; border:2px solid ${color}; box-shadow: 0 2px 8px rgb(0 0 0 / 0.5)">
         <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
         <polyline points="9 22 9 12 15 12 15 22"/>
       </svg>
     `;
   } else if (type === 'depot') {
     svgContent = `
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="background:#ffffff; border-radius:50%; padding:5px; border:2px solid ${color}; box-shadow: 0 2px 5px rgb(0 0 0 / 0.15)">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="background:#0f172a; border-radius:50%; padding:5px; border:2px solid ${color}; box-shadow: 0 2px 8px rgb(0 0 0 / 0.5)">
         <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
         <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
         <line x1="12" y1="22.08" x2="12" y2="12"/>
@@ -75,38 +69,54 @@ const createCustomIcon = (color, type, badgeCount = 0) => {
   });
 };
 
-const MapView = ({ 
-  incidents, 
-  teams, 
-  shelters, 
-  depots, 
-  alerts,
-  assignments,
-  selectedIncident, 
-  onSelectIncident,
-  recenterCoords,
-  layerToggles,
-  showHeatmap
-}) => {
-  const { t } = useLanguage();
+const DEFAULT_LAYER_TOGGLES = {
+  incidents: true,
+  teams: true,
+  shelters: true,
+  depots: true,
+  alerts: true
+};
 
-  // Helper colors
+const MapView = ({ 
+  incidents = [], 
+  teams = [], 
+  shelters = [], 
+  depots = [], 
+  alerts = [],
+  assignments = [],
+  selectedIncident = null, 
+  onSelectIncident = () => {},
+  recenterCoords = null,
+  layerToggles = DEFAULT_LAYER_TOGGLES,
+  showHeatmap = false,
+  resources = null,
+  highlightedResource = null
+}) => {
+  const [tileErrorCount, setTileErrorCount] = useState(0);
+
+  // Extract shelter/team/depot lists if resources bundle prop was passed
+  const activeShelters = shelters.length > 0 ? shelters : (resources?.shelters || []);
+  const activeTeams = teams.length > 0 ? teams : (resources?.rescue_teams || []);
+  const activeDepots = depots.length > 0 ? depots : (resources?.supply_depots || []);
+
+  const safeLayerToggles = { ...DEFAULT_LAYER_TOGGLES, ...(layerToggles || {}) };
+
   const getSeverityColor = (sev) => {
     switch (sev) {
-      case 'Critical': return '#ef4444'; // red-500
-      case 'High': return '#f97316';     // orange-500
-      case 'Medium': return '#eab308';   // yellow-500
-      case 'Low': return '#3b82f6';       // blue-500
+      case 'Critical': return '#ef4444';
+      case 'High': return '#f97316';
+      case 'Medium': return '#eab308';
+      case 'Low': return '#3b82f6';
       default: return '#94a3b8';
     }
   };
 
   const getTeamStatusColor = (stat) => {
     switch (stat) {
-      case 'AVAILABLE': return '#10b981'; // emerald-500
-      case 'ASSIGNED': return '#3b82f6';  // blue-500
-      case 'EN_ROUTE': return '#9333ea';  // purple-600
-      case 'RESCUING': return '#ec4899';  // pink-500
+      case 'AVAILABLE': return '#10b981';
+      case 'ASSIGNED': return '#3b82f6';
+      case 'EN_ROUTE': return '#9333ea';
+      case 'RESCUING': return '#ec4899';
       default: return '#64748b';
     }
   };
@@ -121,29 +131,42 @@ const MapView = ({
     }
   };
 
-  // Center on Bhubaneswar by default
   const defaultCenter = [20.2961, 85.8245];
-  const mapCenter = recenterCoords || (selectedIncident ? [selectedIncident.latitude, selectedIncident.longitude] : defaultCenter);
+  const targetCenter = recenterCoords || 
+    (selectedIncident ? [selectedIncident.latitude, selectedIncident.longitude] : 
+    (highlightedResource ? [highlightedResource.latitude, highlightedResource.longitude] : defaultCenter));
 
   return (
-    <div className="w-full h-full relative border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-slate-50">
+    <div className="w-full h-full relative border border-slate-800 rounded-2xl overflow-hidden shadow-2xl bg-slate-950">
+      {tileErrorCount > 15 && (
+        <div className="absolute top-2 left-2 right-2 z-[1000] bg-slate-900/90 border border-amber-500/30 text-amber-300 px-3 py-1.5 rounded-xl text-xs font-semibold backdrop-blur-md flex justify-between items-center">
+          <span>Map Tile Notice: Operating on cached/offline OpenStreetMap layer.</span>
+          <button onClick={() => setTileErrorCount(0)} className="underline text-[10px] font-bold">Dismiss</button>
+        </div>
+      )}
+
       <MapContainer 
         center={defaultCenter} 
         zoom={12} 
         scrollWheelZoom={true}
         className="w-full h-full"
       >
-        {/* Clean Light Mode Positron CartoDB Tile Layer */}
+        {/* OpenStreetMap Standard Tile Layer (Zero API keys required) */}
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          eventHandlers={{
+            tileerror: () => {
+              setTileErrorCount((prev) => prev + 1);
+            }
+          }}
         />
 
-        <MapRecenter center={mapCenter} />
+        <MapRecenter center={targetCenter} />
 
-        {/* ================= HEATMAP LAYER ================= */}
-        {showHeatmap && layerToggles.incidents && incidents.map((inc) => {
-          if (inc.status === 'RESOLVED' || inc.status === 'REJECTED') return null;
+        {/* Heatmap Layer */}
+        {showHeatmap && safeLayerToggles.incidents && (incidents || []).map((inc) => {
+          if (!inc || inc.status === 'RESOLVED' || inc.status === 'REJECTED') return null;
           const color = getSeverityColor(inc.severity);
           const weight = getSeverityWeight(inc.severity);
           return (
@@ -156,37 +179,35 @@ const MapView = ({
                 fillOpacity: 0.08 * weight,
                 stroke: false
               }}
-              radius={350 * weight} // Radius expands with severity weighting
+              radius={350 * weight}
             />
           );
         })}
 
-        {/* ================= DISASTER ALERTS ZONES ================= */}
-        {layerToggles.alerts && alerts.map((alert) => {
+        {/* Disaster Alert Zones */}
+        {safeLayerToggles.alerts && (alerts || []).map((alert) => {
+          if (!alert || !alert.latitude || !alert.longitude) return null;
           const color = alert.severity === 'Critical' ? '#ef4444' : (alert.severity === 'High' ? '#f97316' : '#eab308');
           return (
-            <React.Fragment key={`alert-zone-${alert.id}`}>
-              {/* Outer boundary advisory circle */}
-              <Circle
-                center={[alert.latitude, alert.longitude]}
-                pathOptions={{
-                  color: color,
-                  fillColor: color,
-                  fillOpacity: 0.02,
-                  dashArray: "5, 10",
-                  weight: 1.5
-                }}
-                radius={8000} // 8 km zone
-              />
-            </React.Fragment>
+            <Circle
+              key={`alert-zone-${alert.id}`}
+              center={[alert.latitude, alert.longitude]}
+              pathOptions={{
+                color: color,
+                fillColor: color,
+                fillOpacity: 0.03,
+                dashArray: "6, 12",
+                weight: 1.8
+              }}
+              radius={8000}
+            />
           );
         })}
 
-        {/* ================= CITIZEN INCIDENTS MARKERS ================= */}
-        {layerToggles.incidents && incidents.map((inc) => {
-          // If active filter restricts it, or it is resolved/rejected, we don't display
+        {/* Citizen Incidents Markers */}
+        {safeLayerToggles.incidents && (incidents || []).map((inc) => {
+          if (!inc || inc.status === 'RESOLVED' || inc.status === 'REJECTED') return null;
           const color = getSeverityColor(inc.severity);
-          
           return (
             <Marker
               key={inc.id}
@@ -197,17 +218,17 @@ const MapView = ({
               }}
             >
               <Popup>
-                <div className="text-xs space-y-1.5 min-w-[200px] text-slate-800">
-                  <div className="flex justify-between items-center border-b border-slate-100 pb-1">
-                    <span className="font-bold text-blue-600 font-mono">{inc.id}</span>
-                    <span className="text-[9px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-650 font-semibold text-slate-600 capitalize">{inc.status}</span>
+                <div className="text-xs space-y-1.5 min-w-[200px] text-slate-100">
+                  <div className="flex justify-between items-center border-b border-slate-700 pb-1">
+                    <span className="font-bold text-blue-400 font-mono">{inc.id}</span>
+                    <span className="text-[9px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-300 font-semibold uppercase">{inc.status}</span>
                   </div>
-                  <div className="text-slate-900 font-bold">{inc.incident_type} Emergency</div>
-                  <p className="text-slate-600 text-[10px] line-clamp-2 italic">"{inc.description}"</p>
-                  <div className="text-[10px] text-slate-500 font-medium">Affected Count: <strong className="text-slate-800">{inc.people_affected}</strong></div>
+                  <div className="text-white font-bold">{inc.disaster_type || inc.incident_type} Emergency</div>
+                  <p className="text-slate-300 text-[10px] line-clamp-2 italic">"{inc.description}"</p>
+                  <div className="text-[10px] text-slate-400 font-medium">Affected: <strong className="text-white">{inc.people_affected} citizens</strong></div>
                   <button 
                     onClick={() => onSelectIncident(inc)}
-                    className="w-full mt-1.5 bg-blue-600 hover:bg-blue-700 text-white text-[10px] py-1.5 rounded-lg font-bold shadow-sm transition-colors"
+                    className="w-full mt-1.5 bg-blue-600 hover:bg-blue-500 text-white text-[10px] py-1.5 rounded-lg font-bold shadow-md transition-colors"
                   >
                     View Details
                   </button>
@@ -217,8 +238,9 @@ const MapView = ({
           );
         })}
 
-        {/* ================= RESCUE TEAMS MARKERS ================= */}
-        {layerToggles.teams && teams.map((team) => {
+        {/* Rescue Teams Markers */}
+        {safeLayerToggles.teams && (activeTeams || []).map((team) => {
+          if (!team || !team.latitude || !team.longitude) return null;
           const color = getTeamStatusColor(team.status);
           return (
             <Marker
@@ -227,14 +249,13 @@ const MapView = ({
               icon={createCustomIcon(color, 'team')}
             >
               <Popup>
-                <div className="text-xs space-y-1.5 text-slate-850">
-                  <div className="font-bold text-slate-900 border-b border-slate-100 pb-1 flex justify-between items-center">
+                <div className="text-xs space-y-1 text-slate-100">
+                  <div className="font-bold text-white border-b border-slate-700 pb-1 flex justify-between items-center">
                     <span>{team.name}</span>
-                    <span className="text-[9px] bg-slate-100 px-1.5 py-0.5 rounded font-mono text-slate-600 font-semibold">{team.id}</span>
+                    <span className="text-[9px] bg-slate-800 px-1.5 py-0.5 rounded font-mono text-slate-300">{team.id}</span>
                   </div>
-                  <div className="text-[10px] text-slate-600 font-medium">Personnel: {team.personnel_count} | Cap: {team.capacity}</div>
-                  <div className="text-[10px] text-slate-650 text-slate-605 text-slate-600 font-medium">Equipment: {team.equipment || 'Standard Gear'}</div>
-                  <div className="text-[10px] font-semibold text-slate-700">
+                  <div className="text-[10px] text-slate-300">Personnel: {team.personnel_count} | Capacity: {team.capacity}</div>
+                  <div className="text-[10px] font-semibold">
                     Status: <strong style={{ color: color }} className="uppercase">{team.status}</strong>
                   </div>
                 </div>
@@ -243,10 +264,11 @@ const MapView = ({
           );
         })}
 
-        {/* ================= SHELTERS MARKERS ================= */}
-        {layerToggles.shelters && shelters.map((shelter) => {
-          // Open = Teal, Near_Capacity = Yellow, Full = Red
-          const color = shelter.status === 'FULL' ? '#ef4444' : (shelter.status === 'NEAR_CAPACITY' ? '#eab308' : '#14b8a6');
+        {/* Shelters Markers */}
+        {safeLayerToggles.shelters && (activeShelters || []).map((shelter) => {
+          if (!shelter || !shelter.latitude || !shelter.longitude) return null;
+          const isHighlighted = highlightedResource && (highlightedResource.id === shelter.id);
+          const color = isHighlighted ? '#10b981' : (shelter.status === 'FULL' ? '#ef4444' : '#14b8a6');
           return (
             <Marker
               key={shelter.id}
@@ -254,12 +276,11 @@ const MapView = ({
               icon={createCustomIcon(color, 'shelter')}
             >
               <Popup>
-                <div className="text-xs space-y-1.5 text-slate-800">
-                  <div className="font-bold text-slate-900 border-b border-slate-100 pb-1">{shelter.name}</div>
-                  <div className="text-[10px] text-slate-600 font-medium">Occupancy: {shelter.occupied_capacity} / {shelter.total_capacity} people</div>
-                  <div className="text-[10px] text-slate-600 font-medium truncate max-w-[200px]">Facilities: {shelter.facilities}</div>
-                  <div className="text-[10px] font-semibold text-slate-700">
-                    Status: <strong style={{ color: color }}>{shelter.status}</strong>
+                <div className="text-xs space-y-1 text-slate-100">
+                  <div className="font-bold text-white border-b border-slate-700 pb-1">{shelter.name}</div>
+                  <div className="text-[10px] text-slate-300">Occupancy: {shelter.current_occupancy || shelter.occupied_capacity || 0} / {shelter.max_capacity || shelter.total_capacity || 500}</div>
+                  <div className="text-[10px] font-semibold">
+                    Status: <strong style={{ color: color }}>{shelter.status || 'OPEN'}</strong>
                   </div>
                 </div>
               </Popup>
@@ -267,9 +288,10 @@ const MapView = ({
           );
         })}
 
-        {/* ================= SUPPLY DEPOTS MARKERS ================= */}
-        {layerToggles.depots && depots.map((depot) => {
-          const color = depot.status === 'OUT_OF_STOCK' ? '#ef4444' : (depot.status === 'LOW_STOCK' ? '#f97316' : '#9333ea');
+        {/* Supply Depots Markers */}
+        {safeLayerToggles.depots && (activeDepots || []).map((depot) => {
+          if (!depot || !depot.latitude || !depot.longitude) return null;
+          const color = depot.status === 'OUT_OF_STOCK' ? '#ef4444' : '#9333ea';
           return (
             <Marker
               key={depot.id}
@@ -277,13 +299,11 @@ const MapView = ({
               icon={createCustomIcon(color, 'depot')}
             >
               <Popup>
-                <div className="text-xs space-y-1.5 text-slate-800">
-                  <div className="font-bold text-slate-900 border-b border-slate-100 pb-1">{depot.name}</div>
-                  <div className="text-[10px] text-slate-600 font-medium">Water stock: {depot.water_stock} L</div>
-                  <div className="text-[10px] text-slate-600 font-medium">Food stock: {depot.food_stock} packs</div>
-                  <div className="text-[10px] text-slate-605 text-slate-600 font-medium">Medical kits: {depot.medical_stock} kits</div>
-                  <div className="text-[10px] font-semibold text-slate-700">
-                    Status: <strong style={{ color: color }}>{depot.status}</strong>
+                <div className="text-xs space-y-1 text-slate-100">
+                  <div className="font-bold text-white border-b border-slate-700 pb-1">{depot.name}</div>
+                  <div className="text-[10px] text-slate-300">Water: {depot.water_stock}L | Food: {depot.food_stock} packs</div>
+                  <div className="text-[10px] font-semibold">
+                    Status: <strong style={{ color: color }}>{depot.status || 'AVAILABLE'}</strong>
                   </div>
                 </div>
               </Popup>
@@ -291,33 +311,39 @@ const MapView = ({
           );
         })}
 
+        {/* Dotted Safe Route Polyline when highlightedResource shelter is selected */}
+        {highlightedResource && (
+          <Polyline
+            positions={[
+              defaultCenter,
+              [highlightedResource.latitude, highlightedResource.longitude]
+            ]}
+            pathOptions={{
+              color: '#10b981',
+              weight: 4,
+              dashArray: "10, 10",
+              opacity: 0.9,
+              lineJoin: 'round'
+            }}
+          />
+        )}
 
-        {/* ================= ASSIGNMENT CONNECTION PATH LINES ================= */}
-        {assignments && assignments.map((asg) => {
-          // We only draw connection lines for active assignments
+        {/* Assignment Connections */}
+        {(assignments || []).map((asg) => {
           if (asg.status !== 'ACTIVE') return null;
-
-          // Find the incident coordinates
           const inc = incidents.find(i => i.id === asg.incident_id);
           if (!inc) return null;
 
-          // Find resource coordinates depending on resource_type
           let resCoords = null;
           if (asg.resource_type === 'RESCUE_TEAM') {
-            const team = teams.find(t => t.id === asg.resource_id);
+            const team = activeTeams.find(t => t.id === asg.resource_id);
             if (team) resCoords = [team.latitude, team.longitude];
           } else if (asg.resource_type === 'SHELTER') {
-            const shelter = shelters.find(s => s.id === asg.resource_id);
+            const shelter = activeShelters.find(s => s.id === asg.resource_id);
             if (shelter) resCoords = [shelter.latitude, shelter.longitude];
-          } else if (asg.resource_type === 'SUPPLY_DEPOT') {
-            const depot = depots.find(d => d.id === asg.resource_id);
-            if (depot) resCoords = [depot.latitude, depot.longitude];
           }
 
           if (!resCoords) return null;
-
-          // Choose color based on resource type
-          const lineColor = asg.resource_type === 'RESCUE_TEAM' ? '#ef4444' : (asg.resource_type === 'SHELTER' ? '#3b82f6' : '#10b981');
 
           return (
             <Polyline
@@ -327,16 +353,14 @@ const MapView = ({
                 resCoords
               ]}
               pathOptions={{
-                color: lineColor,
+                color: asg.resource_type === 'RESCUE_TEAM' ? '#ef4444' : '#3b82f6',
                 weight: 3,
                 dashArray: "8, 12",
-                opacity: 0.8,
-                lineJoin: 'round'
+                opacity: 0.8
               }}
             />
           );
         })}
-
       </MapContainer>
     </div>
   );
