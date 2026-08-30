@@ -7,7 +7,7 @@ export const initWebSocket = () => {
   }
 
   try {
-    socket = new WebSocket('ws://localhost:8000/api/ws');
+    socket = new WebSocket('wss://aashray-backend-ir1k.onrender.com/api/ws');
 
     socket.onopen = () => {
       console.log('WebSocket connected successfully');
