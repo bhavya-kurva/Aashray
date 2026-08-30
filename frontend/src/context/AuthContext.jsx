@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const AuthContext = createContext(null);
 
-const BASE_URL = 'http://localhost:8000/api';
+const BASE_URL = 'https://aashray-backend-ir1k.onrender.com/api';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
